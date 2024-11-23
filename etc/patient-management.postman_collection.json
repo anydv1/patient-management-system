@@ -1,0 +1,366 @@
+{
+	"info": {
+		"_postman_id": "b8ab9a75-262f-4c39-b59e-e52461ca8b41",
+		"name": "patient-management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34082201"
+	},
+	"item": [
+		{
+			"name": "add patients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var patientId = pm.response.json()._id;\r",
+							"\r",
+							"// Set the _id as an environment variable\r",
+							"pm.environment.set(\"patient_id\", patientId);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n        \"username\":\"test-patient3\",\r\n        \"patientDetails\":\r\n {\r\n        \"firstName\":\"test\",\r\n        \"lastName\":\"patient3\",\r\n        \"age\":28,\r\n        \"contact\":\"9876567845\",\r\n        \"medical-history\":[]\r\n }\r\n }    ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/patients",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"patients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register a user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"test1-doctor\",\r\n    \"password\":\"test1\",\r\n    \"role\":\"doctor\" //role can be \"patient\",\"doctor\",\"admin\"\r\n   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/auth/register",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login a user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.json().token) {\r",
+							"    var token = pm.response.json().token;\r",
+							"\r",
+							"    var parts = token.split('.');\r",
+							"\r",
+							"    var payload = JSON.parse(atob(parts[1]));\r",
+							"\r",
+							"    var userId = payload.id;\r",
+							"    pm.environment.set(\"token\", token);\r",
+							"\r",
+							"    pm.environment.set(\"userId\", userId);\r",
+							"\r",
+							"    console.log(\"Decoded userId (_id):\", userId);\r",
+							"} else {\r",
+							"    console.log(\"Token not found in response\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"test-admin\",\r\n    \"password\":\"test1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/auth/login",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get patients",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base-url}}/api/patients",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"patients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update patients",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"test-patient2\",\r\n    \"firstName\":\"updated\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/patients/:id",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"patients",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{patient-user-Id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete patients",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base-url}}/api/patients/:patientId",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"patients",
+						":patientId"
+					],
+					"variable": [
+						{
+							"key": "patientId",
+							"value": "{{patient-user-Id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add appointments",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"patientId\":\"67406b91cb886e45e6886508\",\r\n    \"doctorId\":\"674067f9780269d0bd4801bb\",\r\n    \"date\":\"20-11-2024 14:30\",\r\n    \"status\":\"Scheduled\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/appointments",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"appointments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get appointments",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base-url}}/api/appointments",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"appointments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update appointments",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n    \"date\":\"20-11-2024 17:30\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/appointments/:id",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"appointments",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{appointmentId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete appointments",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base-url}}/api/appointments/:id",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"appointments",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{appointmentId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
